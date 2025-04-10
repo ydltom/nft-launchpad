@@ -22,7 +22,7 @@ const RAFFLE_END_DATE = new Date("2025-04-15T00:00:00Z").getTime()
 
 interface WhitelistStatusProps {
   account: string | null
-  provider: ethers.BrowserProvider | null
+  provider: ethers.providers.Web3Provider | null
 }
 
 interface TimeLeft {

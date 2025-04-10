@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { ethers } from "ethers"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -22,7 +22,7 @@ const contractAddress = "0x1234567890123456789012345678901234567890"
 
 interface TicketPurchaseProps {
   account: string | null
-  provider: ethers.BrowserProvider | null
+  provider: ethers.providers.Web3Provider | null
 }
 
 export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
@@ -66,7 +66,7 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
       // For this hackathon demo, we'll simulate the transaction
 
       // Calculate total cost
-      const totalCost = ethers.parseEther(ticketPrice).mul(ticketAmount)
+      const totalCost = ethers.utils.parseEther(ticketPrice).mul(ticketAmount)
 
       // Get signer
       const signer = await provider.getSigner()

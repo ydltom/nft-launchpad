@@ -44,6 +44,18 @@ const config: Config = {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
+  			gold: {
+  				DEFAULT: '#FFD700',
+  				'100': '#FFF8E7',
+  				'200': '#FFE9B3',
+  				'300': '#FFD980',
+  				'400': '#FFD14D',
+  				'500': '#FFD700',
+  				'600': '#CCAC00',
+  				'700': '#998100',
+  				'800': '#665600',
+  				'900': '#332B00',
+  			},
   			chart: {
   				'1': 'hsl(var(--chart-1))',
   				'2': 'hsl(var(--chart-2))',
