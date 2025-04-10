@@ -17,12 +17,19 @@ const contractABI = [
 // Mock contract address (in a real project, you'd use the actual deployed contract address)
 const contractAddress = "0x1234567890123456789012345678901234567890"
 
-// Local storage key for ticket balances (same as in ticket-purchase.tsx)
-const TICKET_BALANCE_KEY = "nft_raffle_ticket_balances"
+// Set the raffle end date (for the countdown)
+const RAFFLE_END_DATE = new Date("2025-04-15T00:00:00Z").getTime()
 
 interface WhitelistStatusProps {
   account: string | null
   provider: ethers.BrowserProvider | null
+}
+
+interface TimeLeft {
+  days: number
+  hours: number
+  minutes: number
+  seconds: number
 }
 
 export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
@@ -30,6 +37,39 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
   const [ticketBalance, setTicketBalance] = useState<number | null>(null)
   const [raffleEnded, setRaffleEnded] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+
+  // Calculate time left for countdown
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime()
+      const difference = RAFFLE_END_DATE - now
+
+      if (difference <= 0) {
+        // Raffle has ended
+        setRaffleEnded(true)
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 }
+      }
+
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000),
+      }
+    }
+
+    // Initial calculation
+    setTimeLeft(calculateTimeLeft())
+
+    // Update countdown every second
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft())
+    }, 1000)
+
+    // Clear interval on component unmount
+    return () => clearInterval(timer)
+  }, [])
 
   // Check whitelist status when account changes
   useEffect(() => {
@@ -43,19 +83,6 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
       setIsLoading(true)
 
       try {
-        // Load ticket balance from localStorage
-        const storedBalances = localStorage.getItem(TICKET_BALANCE_KEY)
-        if (storedBalances) {
-          const balances = JSON.parse(storedBalances)
-          if (balances[account]) {
-            setTicketBalance(balances[account])
-          } else {
-            setTicketBalance(0)
-          }
-        } else {
-          setTicketBalance(0)
-        }
-
         // In a real implementation, these would be actual contract calls
         // For this hackathon demo, we'll use mock data
 
@@ -64,7 +91,7 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
 
         // Mock data
         setIsWhitelisted(false) // Not whitelisted
-        setRaffleEnded(false) // Raffle not ended yet
+        setTicketBalance(3) // 3 tickets
       } catch (error) {
         console.error("Error checking whitelist status:", error)
       } finally {
@@ -78,6 +105,11 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
   // Format address for display
   const formatAddress = (address: string) => {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
+  }
+
+  // Format number with leading zero if needed
+  const formatNumber = (num: number): string => {
+    return num < 10 ? `0${num}` : `${num}`
   }
 
   return (
@@ -152,9 +184,39 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
                 <div className="rounded-lg bg-gray-900 p-6 text-center">
                   <Clock className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
                   <h3 className="mb-2 text-xl font-bold">Raffle In Progress</h3>
-                  <p className="text-gray-300">
-                    The whitelist raffle has not ended yet. Check back on April 15, 2025 to see if you've won!
-                  </p>
+
+                  {/* Countdown Timer */}
+                  <div className="mb-4 flex justify-center gap-3">
+                    <div className="flex flex-col items-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-800 text-xl font-bold">
+                        {formatNumber(timeLeft.days)}
+                      </div>
+                      <span className="mt-1 text-xs text-gray-400">Days</span>
+                    </div>
+                    <div className="flex items-center justify-center text-xl font-bold">:</div>
+                    <div className="flex flex-col items-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-800 text-xl font-bold">
+                        {formatNumber(timeLeft.hours)}
+                      </div>
+                      <span className="mt-1 text-xs text-gray-400">Hours</span>
+                    </div>
+                    <div className="flex items-center justify-center text-xl font-bold">:</div>
+                    <div className="flex flex-col items-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-800 text-xl font-bold">
+                        {formatNumber(timeLeft.minutes)}
+                      </div>
+                      <span className="mt-1 text-xs text-gray-400">Mins</span>
+                    </div>
+                    <div className="flex items-center justify-center text-xl font-bold">:</div>
+                    <div className="flex flex-col items-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-800 text-xl font-bold">
+                        {formatNumber(timeLeft.seconds)}
+                      </div>
+                      <span className="mt-1 text-xs text-gray-400">Secs</span>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-300">Time remaining until the whitelist raffle ends. Good luck!</p>
                 </div>
               )}
 
@@ -181,7 +243,7 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
           {isWhitelisted ? (
             <ul className="list-inside list-disc space-y-2">
               <li>You can mint your NFT starting April 20, 2025</li>
-              <li>Whitelist mint price: 0.5 IMX</li>
+              <li>Whitelist mint price: 0.05 ETH</li>
               <li>Maximum 2 NFTs per whitelisted address</li>
               <li>Whitelist period lasts for 48 hours</li>
             </ul>
@@ -192,8 +254,8 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
             </p>
           ) : (
             <ul className="list-inside list-disc space-y-2">
-              <li>The raffle will be held on April 15, 2025</li>
-              <li>Winners will be automatically added to the whitelist</li>
+              <li>The raffle will automatically select winners when the countdown ends</li>
+              <li>Winners will be immediately added to the whitelist</li>
               <li>Each ticket increases your chance of winning</li>
               <li>Unused tickets will be refunded if you don't win</li>
             </ul>

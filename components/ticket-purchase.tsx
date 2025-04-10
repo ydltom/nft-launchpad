@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { ethers } from "ethers"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -20,12 +20,6 @@ const contractABI = [
 // Mock contract address (in a real project, you'd use the actual deployed contract address)
 const contractAddress = "0x1234567890123456789012345678901234567890"
 
-// Recipient address for ticket sales
-const TICKET_SALES_RECIPIENT = "0x140Ad5bbbCcDf9e3590Fa059Ff2dcd4aDB7182bc"
-
-// Local storage key for ticket balances
-const TICKET_BALANCE_KEY = "nft_raffle_ticket_balances"
-
 interface TicketPurchaseProps {
   account: string | null
   provider: ethers.BrowserProvider | null
@@ -35,51 +29,22 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
   const [ticketAmount, setTicketAmount] = useState<number>(1)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [ticketBalance, setTicketBalance] = useState<number | null>(null)
-  const [ticketPrice, setTicketPrice] = useState<string>("0.1")
+  const [ticketPrice, setTicketPrice] = useState<string>("0.01")
   const { toast } = useToast()
 
   // Load ticket data when account changes
-  useEffect(() => {
-    if (account) {
-      loadTicketData()
-    } else {
-      setTicketBalance(null)
-    }
-  }, [account])
-
   const loadTicketData = async () => {
-    if (!account) return
+    if (!account || !provider) return
 
     try {
-      // Try to load from localStorage first
-      const storedBalances = localStorage.getItem(TICKET_BALANCE_KEY)
-      if (storedBalances) {
-        const balances = JSON.parse(storedBalances)
-        if (balances[account]) {
-          setTicketBalance(balances[account])
-          return
-        }
-      }
-
-      // If not in localStorage, try to load from contract (mock for now)
       const contract = new ethers.Contract(contractAddress, contractABI, provider)
-      
-      // In a real implementation, this would be an actual contract call
+
+      // In a real implementation, these would be actual contract calls
       // For this hackathon demo, we'll use mock data
-      const mockBalance = 0 // Start with 0 tickets for new users
-      setTicketBalance(mockBalance)
-      
-      // Store in localStorage
-      const balances = storedBalances ? JSON.parse(storedBalances) : {}
-      balances[account] = mockBalance
-      localStorage.setItem(TICKET_BALANCE_KEY, JSON.stringify(balances))
+      setTicketBalance(3) // Mock data
+      setTicketPrice("0.01") // Mock data
     } catch (error) {
       console.error("Error loading ticket data:", error)
-      toast({
-        title: "Error Loading Tickets",
-        description: "Failed to load your ticket balance. Please try again.",
-        variant: "destructive",
-      })
     }
   }
 
@@ -101,7 +66,7 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
       // For this hackathon demo, we'll simulate the transaction
 
       // Calculate total cost
-      const totalCost = ethers.parseEther(ticketPrice) * BigInt(ticketAmount)
+      const totalCost = ethers.parseEther(ticketPrice).mul(ticketAmount)
 
       // Get signer
       const signer = await provider.getSigner()
@@ -116,15 +81,8 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
       // For demo purposes, we'll just wait a bit
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      // Update ticket balance in state and localStorage
-      const newBalance = (ticketBalance || 0) + ticketAmount
-      setTicketBalance(newBalance)
-      
-      // Update localStorage
-      const storedBalances = localStorage.getItem(TICKET_BALANCE_KEY)
-      const balances = storedBalances ? JSON.parse(storedBalances) : {}
-      balances[account] = newBalance
-      localStorage.setItem(TICKET_BALANCE_KEY, JSON.stringify(balances))
+      // Update ticket balance
+      setTicketBalance((prev) => (prev || 0) + ticketAmount)
 
       toast({
         title: "Tickets Purchased!",
@@ -208,11 +166,11 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
               <div className="rounded-lg bg-gray-900 p-4">
                 <div className="flex justify-between">
                   <span>Price per ticket:</span>
-                  <span>{ticketPrice} IMX</span>
+                  <span>{ticketPrice} ETH</span>
                 </div>
                 <div className="mt-2 flex justify-between font-bold">
                   <span>Total cost:</span>
-                  <span>{totalCost.toFixed(3)} IMX</span>
+                  <span>{totalCost.toFixed(3)} ETH</span>
                 </div>
               </div>
             </>
@@ -232,11 +190,11 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
       <div className="mt-8 rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-sm text-gray-300">
         <h3 className="mb-2 font-bold text-white">How it works:</h3>
         <ol className="list-inside list-decimal space-y-2">
-          <li>Purchase raffle tickets for 0.1 IMX each</li>
+          <li>Purchase raffle tickets for 0.01 ETH each</li>
           <li>The raffle will be held on April 15, 2025</li>
           <li>Winners will receive a whitelist spot to mint the NFT</li>
-          <li>Whitelisted addresses can mint for 0.5 IMX</li>
-          <li>Public sale (if any NFTs remain) will be 0.8 IMX</li>
+          <li>Whitelisted addresses can mint for 0.05 ETH</li>
+          <li>Public sale (if any NFTs remain) will be 0.08 ETH</li>
         </ol>
       </div>
     </div>

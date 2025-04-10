@@ -1,5 +1,4 @@
 "use client"
-
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users } from "lucide-react"
@@ -16,6 +15,7 @@ const nftCollection = [
     rarity: "Legendary",
     price: "0.1 IMX",
     supply: "1,500",
+    contractAddress: "0xe8cfccb4aa726dbbbcd46bdc38eb4788519c8d70"
   },
   {
     id: 2,
@@ -89,7 +89,7 @@ export function NFTShowcase() {
         <h3 className="mb-3 text-xl font-bold">About This Collection</h3>
         <p className="text-sm text-gray-300">
           CryptoArt Collective presents a limited edition NFT collection featuring digital artwork from renowned artists
-          around the world. Each piece is unique and minted on the Immutable zkEVM Testnet.
+          around the world. Each piece is unique and minted on the Ethereum Sepolia Testnet.
         </p>
         <div className="mt-4 grid grid-cols-2 gap-4 text-center md:grid-cols-4">
           <div>
@@ -102,11 +102,11 @@ export function NFTShowcase() {
           </div>
           <div>
             <h4 className="text-sm font-bold text-purple-400">Ticket Price</h4>
-            <p className="text-sm">0.1 IMX</p>
+            <p className="text-sm">0.01 ETH</p>
           </div>
           <div>
             <h4 className="text-sm font-bold text-purple-400">Mint Price</h4>
-            <p className="text-sm">0.5 IMX</p>
+            <p className="text-sm">0.05 ETH</p>
           </div>
         </div>
       </div>
