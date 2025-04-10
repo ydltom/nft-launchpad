@@ -10,8 +10,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>NFT Whitelist Raffle</title>
-        <meta name="description" content="NFT Whitelist Raffle for Hackathon" />
+        <title>Immutable NFT Launchpad</title>
+        <meta name="description" content="NFT Launchpad for Hackthon Challenge" />
       </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>

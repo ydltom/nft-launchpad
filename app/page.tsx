@@ -132,16 +132,16 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className="relative h-[400px] w-full overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-[url('/placeholder.svg?height=500&width=1200')] bg-cover bg-center opacity-30" />
+        <div className="absolute inset-0 bg-[url('/background.png')] bg-cover bg-center opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
         <div className="container relative z-10 mx-auto flex h-full flex-col items-center justify-center px-4 text-center">
           <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-6xl">
             <span className="bg-gradient-to-r from-blue-200 via-white to-blue-300 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-              NFT Launchpad 
+              Immutable NFT Launchpad 
             </span>
           </h1>
           <p className="mb-8 max-w-2xl text-lg text-blue-100 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-            Enter the raffle for a chance to mint our exclusive NFT collections on the Immutable zkEVM Testnet
+            Enter the raffle for a chance to purchase exclusive NFT collections launching on Immutable zkEVM
           </p>
         </div>
       </section>

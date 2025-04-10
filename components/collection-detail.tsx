@@ -11,130 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { checkout, config, passport } from '@imtbl/sdk'
 import Link from 'next/link'
-
-// Sample NFT collection data
-const nftCollections = {
-  "cosmic-dreamers": {
-    id: "cosmic-dreamers",
-    name: "Cosmic Dreamers",
-    description:
-      "A journey through the digital cosmos, where dreams and reality merge. This exclusive collection features 10 unique NFTs, each representing a different celestial dream state.",
-    image: "/placeholder.svg?height=400&width=400",
-    artist: "Digital Nomad",
-    price: "0.1 IMX",
-    ticketPrice: "0.01",
-    supply: "1,500",
-    status: "active", // active, ended, upcoming
-    ticketsSold: 342,
-    endTime: new Date("2025-04-15T00:00:00Z").getTime(),
-    contractAddress: "0xe8cfccb4aa726dbbbcd46bdc38eb4788519c8d70",
-    steps: [
-      { id: 1, name: "Ticket Purchase", status: "active" },
-      { id: 2, name: "Winner Announcement", status: "pending" },
-      { id: 3, name: "Distribution", status: "pending" },
-    ],
-  },
-  "neon-horizon": {
-    id: "neon-horizon",
-    name: "Neon Horizon",
-    description:
-      "The edge where digital and physical worlds collide in a burst of neon light. This collection explores the boundaries between reality and the digital realm.",
-    image: "/placeholder.svg?height=400&width=400",
-    artist: "Pixel Prophet",
-    price: "0.1 IMX",
-    ticketPrice: "0.01",
-    supply: "1,500",
-    status: "upcoming", // active, ended, upcoming
-    ticketsSold: 0,
-    endTime: new Date("2025-05-01T00:00:00Z").getTime(),
-    contractAddress: "0x0000000000000000000000000000000000000000",
-    steps: [
-      { id: 1, name: "Ticket Purchase", status: "pending" },
-      { id: 2, name: "Winner Announcement", status: "pending" },
-      { id: 3, name: "Distribution", status: "pending" },
-    ],
-  },
-  "quantum-fragments": {
-    id: "quantum-fragments",
-    name: "Quantum Fragments",
-    description:
-      "Fragments of consciousness captured in the quantum realm. Each NFT represents a different quantum state, frozen in time.",
-    image: "/placeholder.svg?height=400&width=400",
-    artist: "Byte Artist",
-    price: "0.1 IMX",
-    ticketPrice: "0.01",
-    supply: "1,500",
-    status: "ended", // active, ended, upcoming
-    ticketsSold: 1253,
-    endTime: new Date("2025-03-15T00:00:00Z").getTime(),
-    contractAddress: "0x9876543210987654321098765432109876543210",
-    steps: [
-      { id: 1, name: "Ticket Purchase", status: "completed" },
-      { id: 2, name: "Winner Announcement", status: "completed" },
-      { id: 3, name: "Distribution", status: "active" },
-    ],
-  },
-  "ethereal-gardens": {
-    id: "ethereal-gardens",
-    name: "Ethereal Gardens",
-    description:
-      "Digital ecosystems blooming with algorithmic flora and fauna. Each NFT contains a unique generative garden that evolves based on blockchain activity.",
-    image: "/placeholder.svg?height=400&width=400",
-    artist: "Crypto Botanist",
-    price: "0.15 IMX",
-    ticketPrice: "0.015",
-    supply: "1,000",
-    status: "active",
-    ticketsSold: 213,
-    endTime: new Date("2025-06-01T00:00:00Z").getTime(),
-    contractAddress: "0x1234567890123456789012345678901234567890",
-    steps: [
-      { id: 1, name: "Ticket Purchase", status: "active" },
-      { id: 2, name: "Winner Announcement", status: "pending" },
-      { id: 3, name: "Distribution", status: "pending" },
-    ],
-  },
-  "synthetic-memories": {
-    id: "synthetic-memories",
-    name: "Synthetic Memories",
-    description:
-      "Artificial recollections generated from the collective digital consciousness. These NFTs represent memories that never existed but feel eerily familiar.",
-    image: "/placeholder.svg?height=400&width=400",
-    artist: "Neural Architect",
-    price: "0.12 IMX",
-    ticketPrice: "0.012",
-    supply: "2,000",
-    status: "upcoming",
-    ticketsSold: 0,
-    endTime: new Date("2025-07-15T00:00:00Z").getTime(),
-    contractAddress: "0x2345678901234567890123456789012345678901",
-    steps: [
-      { id: 1, name: "Ticket Purchase", status: "pending" },
-      { id: 2, name: "Winner Announcement", status: "pending" },
-      { id: 3, name: "Distribution", status: "pending" },
-    ],
-  },
-  "cybernetic-odyssey": {
-    id: "cybernetic-odyssey",
-    name: "Cybernetic Odyssey",
-    description:
-      "A journey through the evolution of machine consciousness. This collection tells the story of AI emergence through abstract digital art.",
-    image: "/placeholder.svg?height=400&width=400",
-    artist: "Code Wanderer",
-    price: "0.2 IMX",
-    ticketPrice: "0.02",
-    supply: "1,200",
-    status: "upcoming",
-    ticketsSold: 0,
-    endTime: new Date("2025-08-01T00:00:00Z").getTime(),
-    contractAddress: "0x3456789012345678901234567890123456789012",
-    steps: [
-      { id: 1, name: "Ticket Purchase", status: "pending" },
-      { id: 2, name: "Winner Announcement", status: "pending" },
-      { id: 3, name: "Distribution", status: "pending" },
-    ],
-  },
-}
+import { collectionsData, NFTCollection } from "@/lib/collections-data"
 
 // Mock contract ABI (in a real project, you'd import the actual ABI)
 const contractABI = [
@@ -164,8 +41,8 @@ interface TimeLeft {
 
 export function CollectionDetail({ collectionId, account, provider, onBack, showImmutable }: CollectionDetailProps) {
   // Get initial collection data (will be updated with Immutable data if available)
-  const initialCollection = nftCollections[collectionId as keyof typeof nftCollections]
-  const [collection, setCollection] = useState(initialCollection)
+  const initialCollection = collectionsData[collectionId]
+  const [collection, setCollection] = useState<NFTCollection>(initialCollection)
   const [ticketAmount, setTicketAmount] = useState<number>(1)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [ticketBalance, setTicketBalance] = useState<number | null>(null)
@@ -617,7 +494,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
                 <CardTitle>Raffle Status</CardTitle>
                 {collection.status === "active" && <Badge className="bg-green-600">Active</Badge>}
                 {collection.status === "upcoming" && <Badge className="bg-blue-600">Upcoming</Badge>}
-                {collection.status === "ended" && <Badge className="bg-gray-600">Ended</Badge>}
+                {collection.status === "ended" && <Badge className="bg-gold-500">Ended</Badge>}
               </div>
               <CardDescription>
                 {collection.status === "active" && "Purchase tickets to enter the raffle"}
@@ -757,7 +634,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
 
                         {/* Step 1: Ticket Purchase (Pending) */}
                         {step.id === 1 && step.status === "pending" && (
-                          <div className="mt-2 text-sm text-gray-400">Ticket sales will begin soon.</div>
+                          <div className="mt-2 text-sm text-gray-400">Ticket sales will begin soon. Check again later.</div>
                         )}
 
                         {/* Step 2: Winner Announcement (Active) */}

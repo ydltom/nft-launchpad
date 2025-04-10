@@ -36,7 +36,7 @@ export function Navbar({ account, onConnect }: NavbarProps) {
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
             <div className="mr-2 h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-600"></div>
-            <span className="text-lg font-bold text-white">Immutable</span>
+            <span className="text-lg font-bold text-white">Immutable NFT Launchpad</span>
           </Link>
         </div>
 

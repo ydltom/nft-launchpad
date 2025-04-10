@@ -1,15 +1,89 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Users } from "lucide-react"
 import Image from "next/image"
-import { useToast } from "@/hooks/use-toast"
-import { collectionsArray, NFTCollection } from "@/lib/collections-data"
 import { motion } from "framer-motion"
+
+// Sample NFT collection data
+const nftCollections = [
+  {
+    id: "cosmic-dreamers",
+    name: "Cosmic Dreamers",
+    description: "A journey through the digital cosmos, where dreams and reality merge.",
+    image: "/placeholder.svg?height=400&width=400",
+    artist: "Digital Nomad",
+    price: "0.1 IMX",
+    supply: "1,500",
+    status: "active", // active, ended, upcoming
+    ticketsSold: 342,
+    endTime: new Date("2025-04-15T00:00:00Z").getTime(),
+  },
+  {
+    id: "neon-horizon",
+    name: "Neon Horizon",
+    description: "The edge where digital and physical worlds collide in a burst of neon light.",
+    image: "/placeholder.svg?height=400&width=400",
+    artist: "Pixel Prophet",
+    price: "0.1 IMX",
+    supply: "1,500",
+    status: "upcoming", // active, ended, upcoming
+    ticketsSold: 0,
+    endTime: new Date("2025-05-01T00:00:00Z").getTime(),
+  },
+  {
+    id: "quantum-fragments",
+    name: "Quantum Fragments",
+    description: "Fragments of consciousness captured in the quantum realm.",
+    image: "/placeholder.svg?height=400&width=400",
+    artist: "Byte Artist",
+    price: "0.1 IMX",
+    supply: "1,500",
+    status: "ended", // active, ended, upcoming
+    ticketsSold: 1253,
+    endTime: new Date("2025-03-15T00:00:00Z").getTime(),
+  },
+  {
+    id: "digital-dreams",
+    name: "Digital Dreams",
+    description: "Explore the boundaries of imagination in the digital realm.",
+    image: "/placeholder.svg?height=400&width=400",
+    artist: "Tech Visionary",
+    price: "0.15 IMX",
+    supply: "1,000",
+    status: "active", // active, ended, upcoming
+    ticketsSold: 578,
+    endTime: new Date("2025-04-20T00:00:00Z").getTime(),
+  },
+  {
+    id: "cyber-punk",
+    name: "Cyber Punk",
+    description: "A dystopian future where technology and humanity merge.",
+    image: "/placeholder.svg?height=400&width=400",
+    artist: "Neon Artist",
+    price: "0.12 IMX",
+    supply: "2,000",
+    status: "upcoming", // active, ended, upcoming
+    ticketsSold: 0,
+    endTime: new Date("2025-05-15T00:00:00Z").getTime(),
+  },
+  {
+    id: "abstract-reality",
+    name: "Abstract Reality",
+    description: "Abstract art that challenges your perception of reality.",
+    image: "/placeholder.svg?height=400&width=400",
+    artist: "Mind Bender",
+    price: "0.08 IMX",
+    supply: "800",
+    status: "ended", // active, ended, upcoming
+    ticketsSold: 800,
+    endTime: new Date("2025-03-01T00:00:00Z").getTime(),
+  },
+]
 
 interface CollectionGridProps {
   account: string | null
@@ -17,10 +91,6 @@ interface CollectionGridProps {
 }
 
 export function CollectionGrid({ account, onSelectCollection }: CollectionGridProps) {
-  const [collections, setCollections] = useState<NFTCollection[]>(collectionsArray)
-  const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
-
   // Filter state
   const [filters, setFilters] = useState({
     active: true,
@@ -28,19 +98,27 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
     ended: true,
   })
 
+  // Get status badge based on collection status
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "active":
+        return <Badge className="bg-green-600">Active Raffle</Badge>
+      case "upcoming":
+        return <Badge className="bg-blue-600">Upcoming</Badge>
+      case "ended":
+        return <Badge className="bg-gray-600">Raffle Ended</Badge>
+      default:
+        return null
+    }
+  }
+
   // Filter collections based on selected filters
-  const filteredCollections = collections
-    .filter((collection) => {
-      if (collection.status === "active" && filters.active) return true
-      if (collection.status === "upcoming" && filters.upcoming) return true
-      if (collection.status === "ended" && filters.ended) return true
-      return false
-    })
-    .sort((a, b) => {
-      // Custom sort order: ended -> active -> upcoming
-      const statusOrder = { ended: 1, active: 2, upcoming: 3 };
-      return statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder];
-    });
+  const filteredCollections = nftCollections.filter((collection) => {
+    if (collection.status === "active" && filters.active) return true
+    if (collection.status === "upcoming" && filters.upcoming) return true
+    if (collection.status === "ended" && filters.ended) return true
+    return false
+  })
 
   // Handle filter change
   const handleFilterChange = (filter: keyof typeof filters) => {
@@ -50,87 +128,10 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
     }))
   }
 
-  // Fetch products from Immutable API
-  useEffect(() => {
-    const fetchImmutableProducts = async () => {
-      setLoading(true)
-      const environmentId = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID || ''
-      const isTestnet = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT === 'sandbox'
-      
-      try {
-        const apiUrl = `https://api${isTestnet ? '.sandbox' : ''}.immutable.com/v1/primary-sales/${environmentId}/products`
-        console.log('Fetching products for collection grid:', apiUrl)
-        
-        const productsRequest = await fetch(apiUrl)
-        
-        if (!productsRequest.ok) {
-          throw new Error(`Failed to fetch products: ${productsRequest.statusText}`)
-        }
-        
-        const productsData = await productsRequest.json()
-        console.log('Grid products data:', productsData)
-        
-        if (Array.isArray(productsData) && productsData.length > 0) {
-          // Update the Quantum Fragments collection with real data from the first product
-          const product = productsData[0]
-          
-          // Make a copy of the collections array
-          const updatedCollections = [...collections]
-          
-          // Find the index of Quantum Fragments
-          const quantumFragmentsIndex = updatedCollections.findIndex(
-            collection => collection.id === "quantum-fragments"
-          )
-          
-          if (quantumFragmentsIndex !== -1) {
-            // Calculate total supply from all products
-            const totalSupply = productsData.reduce(
-              (sum, p) => sum + (parseInt(p.quantity) || 0), 0
-            )
-            
-            updatedCollections[quantumFragmentsIndex] = {
-              ...updatedCollections[quantumFragmentsIndex],
-              name: product.name || updatedCollections[quantumFragmentsIndex].name,
-              description: product.description || updatedCollections[quantumFragmentsIndex].description,
-              image: product.image || updatedCollections[quantumFragmentsIndex].image,
-              price: product.pricing && product.pricing[0] 
-                ? `${product.pricing[0].amount} ${product.pricing[0].currency}` 
-                : updatedCollections[quantumFragmentsIndex].price,
-              supply: totalSupply > 0 ? totalSupply.toString() : updatedCollections[quantumFragmentsIndex].supply,
-              artist: product.artist || updatedCollections[quantumFragmentsIndex].artist,
-              contractAddress: product.collection?.collection_address || 
-                updatedCollections[quantumFragmentsIndex].contractAddress,
-            }
-            
-            setCollections(updatedCollections)
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching products for grid:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    fetchImmutableProducts()
-  }, [])
-  
-  // Get status badge based on collection status
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return <Badge className="bg-green-600">Active Raffle</Badge>
-      case "upcoming":
-        return <Badge className="bg-blue-600">Upcoming</Badge>
-      case "ended":
-        return <Badge className="bg-gold-500">Raffle Ended</Badge>
-      default:
-        return null
-    }
-  }
-
   return (
     <div className="flex flex-col items-center">
+      <h2 className="mb-4 text-center text-3xl font-bold">Available Collections</h2>
+
       {/* Filter Checkboxes */}
       <div className="mb-8 flex flex-wrap items-center justify-center gap-4 rounded-lg bg-gray-800/50 p-4 backdrop-blur-sm">
         <div className="mr-2 text-sm font-medium text-gray-300">Filter:</div>
@@ -167,7 +168,7 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
             id="filter-ended"
             checked={filters.ended}
             onCheckedChange={() => handleFilterChange("ended")}
-            className="border-gold-500 data-[state=checked]:bg-gold-500 data-[state=checked]:text-white"
+            className="border-gray-500 data-[state=checked]:bg-gray-600 data-[state=checked]:text-white"
           />
           <label
             htmlFor="filter-ended"
@@ -205,9 +206,6 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                       {getStatusBadge(collection.status)}
                     </div>
                     <p className="text-xs text-gray-300">by {collection.artist}</p>
-                    {collection.id === "quantum-fragments" && loading && (
-                      <p className="mt-1 text-xs text-green-400">Updating with live data...</p>
-                    )}
                   </div>
                 </div>
 
@@ -216,7 +214,7 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                     <div className="flex items-center gap-1">
                       <div className="relative h-4 w-4">
                         <Image
-                          src="/imx-logo.png"
+                          src="/images/imx-logo.png"
                           alt="IMX"
                           width={16}
                           height={16}
@@ -242,7 +240,14 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                               : "bg-blue-500"
                         }`}
                         style={{
-                          width: `${collection.status === "upcoming" ? 0 : Math.min(100, (collection.ticketsSold / Number.parseInt(collection.supply.replace(/,/g, ""))) * 100)}%`,
+                          width: `${
+                            collection.status === "upcoming"
+                              ? 0
+                              : Math.min(
+                                  100,
+                                  (collection.ticketsSold / Number.parseInt(collection.supply.replace(/,/g, ""))) * 100,
+                                )
+                          }%`,
                         }}
                       />
                     </div>
@@ -265,15 +270,11 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                     }`}
                     disabled={!account}
                   >
-                    {collection.id === "quantum-fragments" && loading ? (
-                      "Loading..."
-                    ) : (
-                      collection.status === "active"
-                        ? "Enter Raffle"
-                        : collection.status === "upcoming"
-                          ? "View Details"
-                          : "View Results"
-                    )}
+                    {collection.status === "active"
+                      ? "Enter Raffle"
+                      : collection.status === "upcoming"
+                        ? "View Details"
+                        : "View Results"}
                   </Button>
                 </CardContent>
               </Card>
