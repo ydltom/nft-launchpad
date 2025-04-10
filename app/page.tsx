@@ -135,11 +135,6 @@ export default function Home() {
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row">
             <ConnectButton account={account} onConnect={connectWallet} />
-            {account && (
-              <Button variant="outline" className="border-purple-500 text-purple-400 hover:bg-purple-950">
-                View Collection
-              </Button>
-            )}
           </div>
         </div>
       </section>

@@ -1,7 +1,9 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Users } from "lucide-react"
+import Image from "next/image"
 
 // Sample NFT collection data
 const nftCollection = [
@@ -12,6 +14,8 @@ const nftCollection = [
     image: "/placeholder.svg?height=400&width=400",
     artist: "Digital Nomad",
     rarity: "Legendary",
+    price: "0.1 IMX",
+    supply: "1,500",
   },
   {
     id: 2,
@@ -20,6 +24,8 @@ const nftCollection = [
     image: "/placeholder.svg?height=400&width=400",
     artist: "Pixel Prophet",
     rarity: "Epic",
+    price: "0.1 IMX",
+    supply: "1,500",
   },
   {
     id: 3,
@@ -28,6 +34,8 @@ const nftCollection = [
     image: "/placeholder.svg?height=400&width=400",
     artist: "Byte Artist",
     rarity: "Rare",
+    price: "0.1 IMX",
+    supply: "1,500",
   },
 ]
 
@@ -53,6 +61,26 @@ export function NFTShowcase() {
               </div>
               <p className="line-clamp-2 text-xs text-gray-300">{nft.description}</p>
             </CardContent>
+            <CardFooter className="border-t border-gray-700 bg-gray-900 p-3">
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <div className="relative h-4 w-4">
+                    <Image
+                      src="/imx-logo.png"
+                      alt="IMX"
+                      width={16}
+                      height={16}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <span className="text-xs font-medium">{nft.price}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Users className="h-3 w-3 text-purple-400" />
+                  <span className="text-xs text-gray-300">Supply: {nft.supply}</span>
+                </div>
+              </div>
+            </CardFooter>
           </Card>
         ))}
       </div>
