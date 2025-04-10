@@ -125,10 +125,33 @@ export default function Home() {
     }
   }
 
+  // Disconnect wallet function
+  const disconnectWallet = async () => {
+    try {
+      // Clear state
+      setAccount(null)
+      setProvider(null)
+      setShowImmutable(false)
+      
+      toast({
+        title: "Wallet Disconnected",
+        description: "Your wallet has been disconnected",
+        variant: "default",
+      })
+    } catch (error) {
+      console.error("Failed to disconnect wallet:", error)
+      toast({
+        title: "Disconnect Failed",
+        description: "Failed to disconnect your wallet",
+        variant: "destructive",
+      })
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white">
       {/* Navbar */}
-      <Navbar account={account} onConnect={connectWallet} />
+      <Navbar account={account} onConnect={connectWallet} onDisconnect={disconnectWallet} />
       
       {/* Hero Section */}
       <section className="relative h-[400px] w-full overflow-hidden pt-16">

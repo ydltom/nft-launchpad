@@ -55,7 +55,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     endTime: new Date("2025-07-01T00:00:00Z").getTime(),
     contractAddress: "0x8e3f5b721207c2f7a3720dd3118b2731eccb3d92",
     steps: [
-      { id: 1, name: "Ticket Purchase", status: "pending" },
+      { id: 1, name: "Ticket Purchase", status: "active" },
       { id: 2, name: "Winner Announcement", status: "pending" },
       { id: 3, name: "Distribution", status: "pending" },
     ],
@@ -95,9 +95,9 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     endTime: new Date("2025-02-28T00:00:00Z").getTime(),
     contractAddress: "0x9fd320330ecea1f87b29c5551f209b484565e66c",
     steps: [
-      { id: 1, name: "Ticket Purchase", status: "completed" },
-      { id: 2, name: "Winner Announcement", status: "completed" },
-      { id: 3, name: "Distribution", status: "active" },
+      { id: 1, name: "Ticket Purchase", status: "active" },
+      { id: 2, name: "Winner Announcement", status: "pending" },
+      { id: 3, name: "Distribution", status: "pending" },
     ],
   },
   "hunters-on-chain": {
@@ -121,7 +121,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ],
   },
   "cosmic-dreamers": {
-    id: "Imaginary Ones",
+    id: "cosmic-dreamers",
     name: "Imaginary Ones",
     description:
       "A journey through the digital cosmos, where dreams and reality merge. This exclusive collection features 10 unique NFTs, each representing a different celestial dream state.",
@@ -140,7 +140,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
       { id: 3, name: "Distribution", status: "pending" },
     ],
   },
-  "Kaidro Spirit Guardian": {
+  "kaidro-spirit": {
     id: "kaidro-spirit",
     name: "Kaidro Spirit Guardian",
     description:
@@ -180,7 +180,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
       { id: 3, name: "Distribution", status: "active" },
     ],
   },
-  "Neo Tokyo Citizens": {
+  "neo-tokyo": {
     id: "neo-tokyo",
     name: "Neo Tokyo Citizens",
     description:
@@ -195,12 +195,11 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     endTime: new Date("2025-06-01T00:00:00Z").getTime(),
     contractAddress: "0x1234567890123456789012345678901234567890",
     steps: [
-      { id: 1, name: "Ticket Purchase", status: "active" },
+      { id: 1, name: "Ticket Purchase", status: "pending" },
       { id: 2, name: "Winner Announcement", status: "pending" },
       { id: 3, name: "Distribution", status: "pending" },
     ],
   },
-
 };
 
 // Convert the collection data object to an array for components that need it as an array

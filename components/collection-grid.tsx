@@ -167,7 +167,7 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
             id="filter-ended"
             checked={filters.ended}
             onCheckedChange={() => handleFilterChange("ended")}
-            className="border-gold-500 data-[state=checked]:bg-gold-500 data-[state=checked]:text-white"
+            className="border-gold-500 data-[state=checked]:bg-gold-500 data-[state=checked]:text-black"
           />
           <label
             htmlFor="filter-ended"

@@ -10,9 +10,10 @@ import Image from "next/image"
 interface NavbarProps {
   account: string | null
   onConnect: () => Promise<void>
+  onDisconnect?: () => Promise<void>
 }
 
-export function Navbar({ account, onConnect }: NavbarProps) {
+export function Navbar({ account, onConnect, onDisconnect }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -58,12 +59,12 @@ export function Navbar({ account, onConnect }: NavbarProps) {
           <Link href="#about" className="text-sm text-white hover:text-purple-400">
             About
           </Link>
-          <ConnectButton account={account} onConnect={onConnect} />
+          <ConnectButton account={account} onConnect={onConnect} onDisconnect={onDisconnect} />
         </nav>
 
         {/* Mobile Menu Button */}
         <div className="flex items-center md:hidden">
-          <ConnectButton account={account} onConnect={onConnect} />
+          <ConnectButton account={account} onConnect={onConnect} onDisconnect={onDisconnect} />
           <Button
             variant="ghost"
             size="icon"
