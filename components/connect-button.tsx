@@ -17,7 +17,7 @@ export function ConnectButton({ account, onConnect }: ConnectButtonProps) {
   return (
     <Button
       onClick={onConnect}
-      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+      className="bg-gradient-to-r from-blue-200 via-white to-blue-300 text-black hover:from-blue-300 hover:via-white hover:to-blue-400 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]"
     >
       <Wallet className="mr-2 h-4 w-4" />
       {account ? formatAddress(account) : "Connect Wallet"}

@@ -5,6 +5,7 @@ import { ConnectButton } from "@/components/connect-button"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Image from "next/image"
 
 interface NavbarProps {
   account: string | null
@@ -35,7 +36,13 @@ export function Navbar({ account, onConnect }: NavbarProps) {
         {/* Logo */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
-            <div className="mr-2 h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-600"></div>
+            <Image 
+              src="/imx-logo-dark.png" 
+              alt="Immutable Logo" 
+              width={32} 
+              height={32} 
+              className="mr-2"
+            />
             <span className="text-lg font-bold text-white">Immutable NFT Launchpad</span>
           </Link>
         </div>

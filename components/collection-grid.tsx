@@ -261,7 +261,7 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                         ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         : collection.status === "upcoming"
                           ? "bg-blue-600 hover:bg-blue-700"
-                          : "bg-gray-700 hover:bg-gray-600"
+                          : "bg-gradient-to-r from-gold-400 to-gold-600 hover:from-gold-500 hover:to-gold-700"
                     }`}
                     disabled={!account}
                   >
@@ -272,7 +272,7 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                         ? "Enter Raffle"
                         : collection.status === "upcoming"
                           ? "View Details"
-                          : "View Results"
+                          : "Claim Your Whitelist"
                     )}
                   </Button>
                 </CardContent>

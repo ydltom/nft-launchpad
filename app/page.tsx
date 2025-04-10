@@ -164,8 +164,8 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-black py-8 text-center text-gray-400">
         <div className="container mx-auto px-4">
-          <p>© 2025 NFT Whitelist Raffle | Hackathon Project</p>
-          <p className="mt-2 text-sm">Built on Immutable zkEVM Testnet</p>
+          <p>© Immutable NFT Launchpad | Hackathon Project</p>
+          <p className="mt-2 text-sm">Built on Immutable zkEVM</p>
         </div>
       </footer>
     </main>
