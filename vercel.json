@@ -1,15 +1,15 @@
 {
-    "buildCommand": "npm install --legacy-peer-deps && npm run build",
-    "installCommand": "npm install --legacy-peer-deps",
+    "buildCommand": "pnpm install && pnpm build",
+    "installCommand": "pnpm install",
     "framework": "nextjs",
     "outputDirectory": ".next",
-    "devCommand": "npm run dev",
+    "devCommand": "pnpm dev",
     "version": 2,
     "env": {
       "NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT": "sandbox",
       "NEXT_PUBLIC_IMMUTABLE_CLIENT_ID": "${NEXT_PUBLIC_IMMUTABLE_CLIENT_ID}",
       "NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID": "${NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID}",
       "NEXT_PUBLIC_PASSPORT_CLIENT_ID": "${NEXT_PUBLIC_PASSPORT_CLIENT_ID}",
-      "NEXT_PUBLIC_BASE_URL": "${NEXT_PUBLIC_BASE_URL}"
+      "NEXT_PUBLIC_BASE_URL": "https://nft-launchpad-ixqr3bl6b-ydltom-gmailcoms-projects.vercel.app"
     }
   }
