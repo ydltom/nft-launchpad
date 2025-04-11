@@ -49,16 +49,7 @@ export function Navbar({ account, onConnect, onDisconnect }: NavbarProps) {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden items-center space-x-6 md:flex">
-          <Link href="/" className="text-sm text-white hover:text-purple-400">
-            Home
-          </Link>
-          <Link href="#collections" className="text-sm text-white hover:text-purple-400">
-            Collections
-          </Link>
-          <Link href="#about" className="text-sm text-white hover:text-purple-400">
-            About
-          </Link>
+        <nav className="hidden items-center md:flex">
           <ConnectButton account={account} onConnect={onConnect} onDisconnect={onDisconnect} />
         </nav>
 
@@ -79,27 +70,7 @@ export function Navbar({ account, onConnect, onDisconnect }: NavbarProps) {
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <nav className="container mx-auto space-y-4 bg-black/95 px-4 py-4 md:hidden">
-          <Link
-            href="/"
-            className="block rounded-md px-3 py-2 text-white hover:bg-gray-800"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Home
-          </Link>
-          <Link
-            href="#collections"
-            className="block rounded-md px-3 py-2 text-white hover:bg-gray-800"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Collections
-          </Link>
-          <Link
-            href="#about"
-            className="block rounded-md px-3 py-2 text-white hover:bg-gray-800"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            About
-          </Link>
+          {/* No links here now */}
         </nav>
       )}
     </header>

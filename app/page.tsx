@@ -5,6 +5,7 @@ import { ethers } from "ethers"
 import { Navbar } from "@/components/navbar"
 import { CollectionGrid } from "@/components/collection-grid"
 import { CollectionDetail } from "@/components/collection-detail"
+import { FeaturedCarousel } from "@/components/featured-carousel"
 import { useToast } from "@/hooks/use-toast"
 
 // Add type declaration for window.ethereum
@@ -168,6 +169,9 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* Featured Carousel - New addition */}
+      <FeaturedCarousel />
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-1">

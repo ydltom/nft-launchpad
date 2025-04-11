@@ -12,6 +12,8 @@ export interface NFTCollection {
   ticketsSold: number;
   endTime: number;
   contractAddress: string;
+  participantCount: number;
+  winnerCount: number;
   steps: {
     id: number;
     name: string;
@@ -31,7 +33,9 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketPrice: "20",
     supply: "2,500",
     status: "active",
-    ticketsSold: 475,
+    ticketsSold: 2333,
+    participantCount: 389,
+    winnerCount: 0,
     endTime: new Date("2025-04-13T00:00:00Z").getTime(),
     contractAddress: "0xd4f8e3c75c94571c6ceeb37b5a50b9e06eb3b426",
     steps: [
@@ -51,7 +55,9 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketPrice: "25",
     supply: "1,000",
     status: "active",
-    ticketsSold: 0,
+    ticketsSold: 855,
+    participantCount: 532,
+    winnerCount: 0,
     endTime: new Date("2025-04-15T00:00:00Z").getTime(),
     contractAddress: "0x8e3f5b721207c2f7a3720dd3118b2731eccb3d92",
     steps: [
@@ -71,7 +77,9 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketPrice: "20",
     supply: "1,800",
     status: "active",
-    ticketsSold: 522,
+    ticketsSold: 1777,
+    participantCount: 412,
+    winnerCount: 0,
     endTime: new Date("2025-04-20T00:00:00Z").getTime(),
     contractAddress: "0xe7c1a3b1c45a82c0e141b1be3ae1d7c12571650a",
     steps: [
@@ -92,6 +100,8 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "3,000",
     status: "active",
     ticketsSold: 2750,
+    participantCount: 1893,
+    winnerCount: 0,
     endTime: new Date("2025-04-25T00:00:00Z").getTime(),
     contractAddress: "0x9fd320330ecea1f87b29c5551f209b484565e66c",
     steps: [
@@ -112,6 +122,8 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "2,200",
     status: "upcoming",
     ticketsSold: 0,
+    participantCount: 0,
+    winnerCount: 0,
     endTime: new Date("2025-05-01T00:00:00Z").getTime(),
     contractAddress: "0x1a2c3f4d5e6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c",
     steps: [
@@ -132,6 +144,8 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "1,500",
     status: "active",
     ticketsSold: 342,
+    participantCount: 278,
+    winnerCount: 0,
     endTime: new Date("2025-05-01T00:00:00Z").getTime(),
     contractAddress: "0xe8cfccb4aa726dbbbcd46bdc38eb4788519c8d70",
     steps: [
@@ -152,6 +166,8 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "1,500",
     status: "upcoming",
     ticketsSold: 0,
+    participantCount: 0,
+    winnerCount: 0,
     endTime: new Date("2025-05-01T00:00:00Z").getTime(),
     contractAddress: "0x0000000000000000000000000000000000000000",
     steps: [
@@ -171,7 +187,9 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketPrice: "25",
     supply: "1,500",
     status: "ended",
-    ticketsSold: 1253,
+    ticketsSold: 1430,
+    participantCount: 847,
+    winnerCount: 120,
     endTime: new Date("2025-03-15T00:00:00Z").getTime(),
     contractAddress: "0x9876543210987654321098765432109876543210",
     steps: [
@@ -192,6 +210,8 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "1,000",
     status: "upcoming",
     ticketsSold: 213,
+    participantCount: 0,
+    winnerCount: 0,
     endTime: new Date("2025-06-01T00:00:00Z").getTime(),
     contractAddress: "0x1234567890123456789012345678901234567890",
     steps: [

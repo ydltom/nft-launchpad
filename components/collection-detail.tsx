@@ -13,6 +13,7 @@ import { checkout, config, passport } from '@imtbl/sdk'
 import Link from 'next/link'
 import { collectionsData, NFTCollection } from "@/lib/collections-data"
 import { CountdownTimer } from "@/components/countdown-timer"
+import { LeaderboardButton } from "./leaderboard-button"
 
 // Mock contract ABI (in a real project, you'd import the actual ABI)
 const contractABI = [
@@ -61,7 +62,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
   } | null>(null)
   
   // Setup Immutable config
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3010'
   const environmentId = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID || ''
   const passportClientId = process.env.NEXT_PUBLIC_PASSPORT_CLIENT_ID || ''
   const isTestnet = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT === 'sandbox'
@@ -427,7 +428,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-10xl">
       <Button onClick={onBack} variant="outline" className="mb-6">
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Collections
       </Button>
@@ -446,7 +447,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
+      <div className="grid gap-6 md:grid-cols-[2fr_3fr]">
         {/* Collection Image and Info */}
         <Card className="overflow-hidden bg-gray-800 text-white">
           <div className="relative aspect-square">
@@ -718,7 +719,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
             <CardHeader>
               <CardTitle>Collection Stats</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div className="rounded-lg bg-gray-900 p-3 text-center">
                   <p className="text-sm text-gray-400">Total Supply</p>
@@ -736,6 +737,19 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
                   <p className="text-sm text-gray-400">NFT Price</p>
                   <p className="text-xl font-bold">{collection.price}</p>
                 </div>
+              </div>
+
+              {/* Leaderboard Buttons */}
+              <div className="space-y-3">
+                <LeaderboardButton
+                  type="participants"
+                  count={collection.participantCount}
+                  collectionId={collection.id}
+                />
+
+                {collection.status === "ended" && (
+                  <LeaderboardButton type="winners" count={collection.winnerCount} collectionId={collection.id} />
+                )}
               </div>
             </CardContent>
           </Card>
