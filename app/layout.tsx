@@ -1,6 +1,8 @@
 import type React from "react"
 import "@/app/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { RecentPurchasePopup } from "@/components/recent-purchase-popup"
+
 
 export default function RootLayout({
   children,
@@ -16,6 +18,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
+          <RecentPurchasePopup />
         </ThemeProvider>
       </body>
     </html>

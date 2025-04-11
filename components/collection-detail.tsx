@@ -6,7 +6,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, CheckCircle2, XCircle, Clock, Ticket, Users, ExternalLink } from "lucide-react"
+import { 
+  ArrowLeft, 
+  CheckCircle2, 
+  XCircle, 
+  Clock, 
+  Ticket, 
+  Users, 
+  ExternalLink, 
+  HelpCircle,
+  Calendar,
+  Info,
+  Share2
+} from "lucide-react"
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { checkout, config, passport } from '@imtbl/sdk'
@@ -416,6 +434,86 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
     }
   }
 
+  const getSubscriptionPercentage = () => {
+    const totalSupply = Number.parseInt(collection.supply.replace(/,/g, ""));
+    return totalSupply > 0 ? Math.min(100, Math.round((collection.ticketsSold / totalSupply) * 100)) : 0;
+  }
+
+  const handleAddToCalendar = (step: { id: number; name: string; status: string }) => {
+    // Calculate the start date based on the collection's endTime
+    const startDate = new Date();
+    // Add one day to the current date for demonstration purposes
+    startDate.setDate(startDate.getDate() + 1);
+    
+    // Format dates for iCalendar format
+    const formatDate = (date: Date) => {
+      return date.toISOString().replace(/-|:|\.\d+/g, "");
+    };
+    
+    const start = formatDate(startDate);
+    // Event ends 1 hour after start
+    const end = formatDate(new Date(startDate.getTime() + 3600000));
+    
+    // Create calendar event content
+    const calendarContent = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VEVENT",
+      `DTSTART:${start}`,
+      `DTEND:${end}`,
+      `SUMMARY:${collection.name} Raffle Opens`,
+      `DESCRIPTION:The ticket sale for ${collection.name} begins.`,
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].join("\n");
+    
+    // Create and trigger download of ics file
+    const blob = new Blob([calendarContent], { type: "text/calendar;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${collection.name.replace(/\s+/g, "-")}-raffle.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Added to Calendar",
+      description: "Event added to your calendar",
+      variant: "default",
+    });
+  }
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `${collection.name} Raffle`,
+        text: `Check out the ${collection.name} NFT raffle!`,
+        url: window.location.href,
+      })
+      .catch((error) => {
+        console.error("Error sharing:", error);
+        fallbackShare();
+      });
+    } else {
+      fallbackShare();
+    }
+  }
+
+  const fallbackShare = () => {
+    // Fallback to copying the URL to clipboard
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => {
+        toast({
+          title: "Link Copied",
+          description: "Link copied to clipboard",
+          variant: "default",
+        });
+      })
+      .catch((error) => {
+        console.error("Error copying to clipboard:", error);
+      });
+  }
+
   if (!collection) {
     return (
       <div className="text-center">
@@ -641,7 +739,79 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
 
                         {/* Step 1: Ticket Purchase (Pending) */}
                         {step.id === 1 && step.status === "pending" && (
-                          <div className="mt-2 text-sm text-gray-400">Ticket sales will begin soon. Check again later.</div>
+                          <div className="mt-3 space-y-4 rounded-lg bg-gray-900 p-4">
+                            <div className="mb-3 flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm">Ticket price</span>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger>
+                                      <HelpCircle className="h-4 w-4 text-gray-500" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Price per ticket in the raffle</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-1">
+                                  <div className="relative h-5 w-5">
+                                    <Image
+                                      src="/imx-logo.png"
+                                      alt="IMX"
+                                      width={20}
+                                      height={20}
+                                      className="h-full w-full object-contain"
+                                    />
+                                  </div>
+                                  <span className="text-xl font-bold">{collection.ticketPrice}</span>
+                                  <span className="text-sm text-gray-400">{collection.ticketPriceUsd || '$0.00'}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mb-3">
+                              <div className="mb-1 flex items-center justify-between">
+                                <span className="text-sm text-gray-400">{getSubscriptionPercentage()}% subscribed</span>
+                                <span className="text-sm text-gray-400">
+                                  {collection.ticketsSold}/{collection.supply}
+                                </span>
+                              </div>
+                              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-800">
+                                <div
+                                  className="h-full bg-blue-600"
+                                  style={{ width: `${getSubscriptionPercentage()}%` }}
+                                ></div>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 flex w-full flex-col gap-2">
+                              <Button
+                                variant="outline"
+                                className="w-full justify-center bg-blue-600 text-white hover:bg-blue-700"
+                                onClick={() => handleAddToCalendar(step)}
+                              >
+                                <Calendar className="mr-2 h-4 w-4" />
+                                Add to calendar
+                              </Button>
+
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center text-xs text-gray-400">
+                                  <Info className="mr-1 h-4 w-4" />
+                                  If you don't win, you can manually claim your refund.
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="rounded-full bg-gray-700 hover:bg-gray-600"
+                                  onClick={handleShare}
+                                >
+                                  <Share2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
                         )}
 
                         {/* Step 2: Winner Announcement (Active) */}

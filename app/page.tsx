@@ -1,5 +1,6 @@
 "use client"
 
+import type React from "react"
 import { useState, useEffect } from "react"
 import { ethers } from "ethers"
 import { Navbar } from "@/components/navbar"
@@ -165,7 +166,7 @@ export default function Home() {
             </span>
           </h1>
           <p className="mb-8 max-w-2xl text-lg text-blue-100 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-            Enter the raffle for a chance to purchase exclusive NFT collections launching on Immutable zkEVM
+          Exclusive NFT Launchpad with Built-in Whitelisting & Raffle Redemption
           </p>
         </div>
       </section>

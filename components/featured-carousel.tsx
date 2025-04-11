@@ -63,7 +63,7 @@ export function FeaturedCarousel() {
       price: "20 IMX",
       countdown: new Date("2025-04-14T23:59:59"),
       ctaText: "Explore Presale",
-      ctaLink: "/collections/chika-genesis",
+      ctaLink: "",
       secondaryCta: {
         text: "Add to calendar",
         icon: <Calendar className="mr-2 h-4 w-4" />,
@@ -82,7 +82,7 @@ export function FeaturedCarousel() {
       description: "Leverage our platform for growth and innovation",
       image: "/wave.jpg",
       ctaText: "Apply now",
-      ctaLink: "/apply",
+      ctaLink: "",
       thumbnails: [
         "/ravenquest-banner.webp",
         "/gu-banner.png",

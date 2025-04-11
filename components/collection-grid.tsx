@@ -124,7 +124,7 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
       case "upcoming":
         return <Badge className="bg-blue-600">Upcoming</Badge>
       case "ended":
-        return <Badge className="bg-gold-500">Raffle Ended</Badge>
+        return <Badge className="bg-gold-500">Claims Live</Badge>
       default:
         return null
     }
@@ -287,7 +287,7 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                         ? "Enter Raffle"
                         : collection.status === "upcoming"
                           ? "View Details"
-                          : "Claim Your Whitelist"
+                          : "Claim Your Allocation"
                     )}
                   </Button>
                 </CardContent>

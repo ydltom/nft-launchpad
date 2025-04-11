@@ -1,3 +1,5 @@
+"use client"
+
 // Shared NFT collection data for the application
 export interface NFTCollection {
   id: string;
@@ -7,6 +9,7 @@ export interface NFTCollection {
   artist: string;
   price: string;
   ticketPrice: string;
+  ticketPriceUsd?: string; // Optional USD price for tickets
   supply: string;
   status: "active" | "ended" | "upcoming";
   ticketsSold: number;
@@ -102,7 +105,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketsSold: 2750,
     participantCount: 1893,
     winnerCount: 0,
-    endTime: new Date("2025-04-25T00:00:00Z").getTime(),
+    endTime: new Date("2025-04-19T00:00:00Z").getTime(),
     contractAddress: "0x9fd320330ecea1f87b29c5551f209b484565e66c",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "active" },
@@ -124,7 +127,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketsSold: 0,
     participantCount: 0,
     winnerCount: 0,
-    endTime: new Date("2025-05-01T00:00:00Z").getTime(),
+    endTime: new Date("2025-04-20T00:00:00Z").getTime(),
     contractAddress: "0x1a2c3f4d5e6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "pending" },
@@ -146,7 +149,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketsSold: 342,
     participantCount: 278,
     winnerCount: 0,
-    endTime: new Date("2025-05-01T00:00:00Z").getTime(),
+    endTime: new Date("2025-04-23T00:00:00Z").getTime(),
     contractAddress: "0xe8cfccb4aa726dbbbcd46bdc38eb4788519c8d70",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "active" },
@@ -209,7 +212,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     ticketPrice: "20",
     supply: "1,000",
     status: "upcoming",
-    ticketsSold: 213,
+    ticketsSold: 0,
     participantCount: 0,
     winnerCount: 0,
     endTime: new Date("2025-06-01T00:00:00Z").getTime(),
