@@ -132,6 +132,13 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
 
   return (
     <div className="flex flex-col items-center">
+      {/* Wallet connection notice - moved above filters */}
+      {!account && (
+        <div className="mt-8 rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-center text-gray-300 mb-8">
+          <p>Connect your wallet to enter raffles and view collection details</p>
+        </div>
+      )}
+      
       {/* Filter Checkboxes */}
       <div className="mb-8 flex flex-wrap items-center justify-center gap-4 rounded-lg bg-gray-800/50 p-4 backdrop-blur-sm">
         <div className="mr-2 text-sm font-medium text-gray-300">Filter:</div>
@@ -307,12 +314,6 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
           </div>
         )}
       </div>
-
-      {!account && (
-        <div className="mt-8 rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-center text-gray-300">
-          <p>Connect your wallet to enter raffles and view collection details</p>
-        </div>
-      )}
     </div>
   )
 }
