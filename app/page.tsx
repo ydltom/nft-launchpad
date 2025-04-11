@@ -1,9 +1,8 @@
 "use client"
 
-import type React from "react"
 import { useState, useEffect } from "react"
 import { ethers } from "ethers"
-import { Navbar } from "@/components/navbar"
+import { Navbar } from "@/components/navigationbar"
 import { CollectionGrid } from "@/components/collection-grid"
 import { CollectionDetail } from "@/components/collection-detail"
 import { FeaturedCarousel } from "@/components/featured-carousel"

@@ -1,0 +1,15 @@
+{
+    "buildCommand": "npm install --legacy-peer-deps && npm run build",
+    "installCommand": "npm install --legacy-peer-deps",
+    "framework": "nextjs",
+    "outputDirectory": ".next",
+    "devCommand": "npm run dev",
+    "version": 2,
+    "env": {
+      "NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT": "sandbox",
+      "NEXT_PUBLIC_IMMUTABLE_CLIENT_ID": "${NEXT_PUBLIC_IMMUTABLE_CLIENT_ID}",
+      "NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID": "${NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID}",
+      "NEXT_PUBLIC_PASSPORT_CLIENT_ID": "${NEXT_PUBLIC_PASSPORT_CLIENT_ID}",
+      "NEXT_PUBLIC_BASE_URL": "${NEXT_PUBLIC_BASE_URL}"
+    }
+  }
