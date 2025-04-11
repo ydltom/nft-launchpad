@@ -747,19 +747,15 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
         {/* Sale widget container */}
         {saleOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div id="sale-widget" className="h-[80vh] w-[80vw] max-w-xl rounded-lg bg-white" />
-            <Button 
-              variant="outline" 
-              className="absolute right-4 top-4"
-              onClick={() => {
-                setSaleOpen(false);
-                if (saleWidget) {
-                  saleWidget.unmount();
+            <div className="relative">
+              <div id="sale-widget" />
+              <style jsx global>{`
+                /* Hide the Immutable close button if needed */
+                button[aria-label="Close"] {
+                  display: none !important;
                 }
-              }}
-            >
-              Close
-            </Button>
+              `}</style>
+            </div>
           </div>
         )}
         

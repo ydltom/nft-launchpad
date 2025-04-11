@@ -223,7 +223,9 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                           className="h-full w-full object-contain"
                         />
                       </div>
-                      <span className="text-xs font-medium">{collection.price}</span>
+                      <span className="text-xs font-medium">
+                        {collection.ticketPrice} IMX
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="h-3 w-3 text-purple-400" />
