@@ -10,6 +10,7 @@ import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { collectionsArray, NFTCollection } from "@/lib/collections-data"
 import { motion } from "framer-motion"
+import { CountdownTimer } from "@/components/countdown-timer"
 
 interface CollectionGridProps {
   account: string | null
@@ -199,6 +200,18 @@ export function CollectionGrid({ account, onSelectCollection }: CollectionGridPr
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                  
+                  {/* Add countdown timer for active raffles */}
+                  {collection.status === "active" && (
+                    <div className="absolute right-3 top-3 z-10 transition-all duration-300 hover:scale-105">
+                      <CountdownTimer 
+                        endTime={collection.endTime} 
+                        compact={true} 
+                        className="animate-pulse-slow hover:animate-none" 
+                      />
+                    </div>
+                  )}
+                  
                   <div className="absolute bottom-3 left-3 right-3">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-bold">{collection.name}</h3>

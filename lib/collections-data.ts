@@ -32,7 +32,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "2,500",
     status: "active",
     ticketsSold: 475,
-    endTime: new Date("2025-05-30T00:00:00Z").getTime(),
+    endTime: new Date("2025-04-13T00:00:00Z").getTime(),
     contractAddress: "0xd4f8e3c75c94571c6ceeb37b5a50b9e06eb3b426",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "active" },
@@ -52,7 +52,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "1,000",
     status: "active",
     ticketsSold: 0,
-    endTime: new Date("2025-07-01T00:00:00Z").getTime(),
+    endTime: new Date("2025-04-15T00:00:00Z").getTime(),
     contractAddress: "0x8e3f5b721207c2f7a3720dd3118b2731eccb3d92",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "active" },
@@ -72,7 +72,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "1,800",
     status: "active",
     ticketsSold: 522,
-    endTime: new Date("2025-06-15T00:00:00Z").getTime(),
+    endTime: new Date("2025-04-20T00:00:00Z").getTime(),
     contractAddress: "0xe7c1a3b1c45a82c0e141b1be3ae1d7c12571650a",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "active" },
@@ -92,7 +92,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "3,000",
     status: "active",
     ticketsSold: 2750,
-    endTime: new Date("2025-02-28T00:00:00Z").getTime(),
+    endTime: new Date("2025-04-25T00:00:00Z").getTime(),
     contractAddress: "0x9fd320330ecea1f87b29c5551f209b484565e66c",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "active" },
@@ -112,7 +112,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "2,200",
     status: "upcoming",
     ticketsSold: 0,
-    endTime: new Date("2025-08-15T00:00:00Z").getTime(),
+    endTime: new Date("2025-05-01T00:00:00Z").getTime(),
     contractAddress: "0x1a2c3f4d5e6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "pending" },
@@ -132,7 +132,7 @@ export const collectionsData: { [key: string]: NFTCollection } = {
     supply: "1,500",
     status: "active",
     ticketsSold: 342,
-    endTime: new Date("2025-04-15T00:00:00Z").getTime(),
+    endTime: new Date("2025-05-01T00:00:00Z").getTime(),
     contractAddress: "0xe8cfccb4aa726dbbbcd46bdc38eb4788519c8d70",
     steps: [
       { id: 1, name: "Ticket Purchase", status: "active" },
