@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { ethers } from "ethers"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,10 +21,9 @@ const contractAddress = "0x1234567890123456789012345678901234567890"
 
 interface TicketPurchaseProps {
   account: string | null
-  provider: ethers.providers.Web3Provider | null
 }
 
-export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
+export function TicketPurchase({ account }: TicketPurchaseProps) {
   const [ticketAmount, setTicketAmount] = useState<number>(1)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [ticketBalance, setTicketBalance] = useState<number | null>(null)
@@ -34,11 +32,9 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
 
   // Load ticket data when account changes
   const loadTicketData = async () => {
-    if (!account || !provider) return
+    if (!account) return
 
     try {
-      const contract = new ethers.Contract(contractAddress, contractABI, provider)
-
       // In a real implementation, these would be actual contract calls
       // For this hackathon demo, we'll use mock data
       setTicketBalance(3) // Mock data
@@ -50,7 +46,7 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
 
   // Purchase tickets
   const purchaseTickets = async () => {
-    if (!account || !provider) {
+    if (!account) {
       toast({
         title: "Wallet Not Connected",
         description: "Please connect your wallet first",
@@ -62,22 +58,6 @@ export function TicketPurchase({ account, provider }: TicketPurchaseProps) {
     setIsLoading(true)
 
     try {
-      // In a real implementation, this would be an actual contract call
-      // For this hackathon demo, we'll simulate the transaction
-
-      // Calculate total cost
-      const totalCost = ethers.utils.parseEther(ticketPrice).mul(ticketAmount)
-
-      // Get signer
-      const signer = await provider.getSigner()
-
-      // Create contract instance
-      const contract = new ethers.Contract(contractAddress, contractABI, signer)
-
-      // Simulate transaction (in a real app, this would be a real transaction)
-      // const tx = await contract.buyTickets(ticketAmount, { value: totalCost })
-      // await tx.wait()
-
       // For demo purposes, we'll just wait a bit
       await new Promise((resolve) => setTimeout(resolve, 2000))
 

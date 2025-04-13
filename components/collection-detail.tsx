@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import type { ethers } from "ethers"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -32,24 +31,12 @@ import Link from 'next/link'
 import { collectionsData, NFTCollection } from "@/lib/collections-data"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { LeaderboardButton } from "./leaderboard-button"
-
-// Mock contract ABI (in a real project, you'd import the actual ABI)
-const contractABI = [
-  "function buyTickets(string collectionId, uint256 amount) payable",
-  "function ticketPrice(string collectionId) view returns (uint256)",
-  "function getTicketBalance(address user, string collectionId) view returns (uint256)",
-  "function isWhitelisted(address user, string collectionId) view returns (bool)",
-]
-
-// Mock contract address (in a real project, you'd use the actual deployed contract address)
-const contractAddress = "0x1234567890123456789012345678901234567890"
+import { baseConfig, passportInstance, isTestnet } from '@/lib/immutable'
 
 interface CollectionDetailProps {
   collectionId: string
   account: string | null
-  provider: ethers.providers.Web3Provider | null
   onBack: () => void
-  showImmutable: boolean
 }
 
 interface TimeLeft {
@@ -59,17 +46,14 @@ interface TimeLeft {
   seconds: number
 }
 
-export function CollectionDetail({ collectionId, account, provider, onBack, showImmutable }: CollectionDetailProps) {
+export function CollectionDetail({ collectionId, account, onBack }: CollectionDetailProps) {
   // Get initial collection data (will be updated with Immutable data if available)
   const initialCollection = collectionsData[collectionId]
   const [collection, setCollection] = useState<NFTCollection>(initialCollection)
   const [ticketAmount, setTicketAmount] = useState<number>(1)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [ticketBalance, setTicketBalance] = useState<number | null>(null)
-  const [isWhitelisted, setIsWhitelisted] = useState<boolean | null>(null)
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const { toast } = useToast()
-  const [eligibleToPurchase, setEligibleToPurchase] = useState<boolean>(false)
   const [immutableProducts, setImmutableProducts] = useState<any[]>([])
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(false)
   const [saleWidget, setSaleWidget] = useState<checkout.Widget<typeof checkout.WidgetType.SALE> | null>(null)
@@ -79,34 +63,11 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
     message: React.ReactNode | string
   } | null>(null)
   
-  // Setup Immutable config
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3010'
+  // Use imported config and instance
   const environmentId = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID || ''
-  const passportClientId = process.env.NEXT_PUBLIC_PASSPORT_CLIENT_ID || ''
-  const isTestnet = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT === 'sandbox'
-  
-  const environment = isTestnet
-    ? config.Environment.SANDBOX
-    : config.Environment.PRODUCTION
 
-  const baseConfig = useMemo(() => new config.ImmutableConfiguration({
-    environment,
-  }), [])
-
-  const passportConfig = useMemo(() => ({
-    baseConfig,
-    clientId: passportClientId,
-    redirectUri: `${baseURL}/?login=true&environmentId=${environmentId}`,
-    logoutRedirectUri: `${baseURL}/?logout=true&environmentId=${environmentId}`,
-    audience: 'platform_api',
-    scope: 'openid offline_access email transact',
-  }), [baseConfig])
-
-  const passportInstance = useMemo(
-    () => new passport.Passport(passportConfig),
-    [passportConfig],
-  )
-
+  // Initialize checkoutInstance using imported baseConfig and passportInstance
+  // Handle potential null passportInstance
   const checkoutInstance = useMemo(() => {
     return new checkout.Checkout({
       baseConfig,
@@ -127,7 +88,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
 
   // Initialize checkout widget
   useEffect(() => {
-    if (!showImmutable || !isWhitelisted) return
+    if (!account || !checkoutInstance) return // Check checkoutInstance
     
     (async () => {
       try {
@@ -142,7 +103,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
         console.error('Error initializing widgets:', error)
       }
     })()
-  }, [checkoutInstance, showImmutable, isWhitelisted])
+  }, [checkoutInstance, account, saleWidget])
 
   // Set up event listeners for the sale widget
   useEffect(() => {
@@ -163,6 +124,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
             message: (
               <>
                 Transaction successful. View it in the {' '}
+                {/* Use imported isTestnet */}
                 <Link href={`https://explorer${isTestnet ? '.testnet' : ''}.immutable.com/tx/${hash}`}>
                   block explorer
                 </Link>
@@ -198,13 +160,6 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
     })
   }, [saleWidget, isTestnet])
 
-  // Handle passport login callback
-  useEffect(() => {
-    if (passportInstance && login) {
-      passportInstance.loginCallback()
-    }
-  }, [login, passportInstance])
-  
   // Handle sale click
   const handleSaleClick = (items: checkout.SaleItem[]) => {
     if (!saleWidget) {
@@ -269,151 +224,71 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
     return () => clearInterval(timer)
   }, [collection])
 
-  // Load ticket data when account changes
+  // Fetch Immutable products
   useEffect(() => {
-    const loadTicketData = async () => {
-      if (!account || !provider) return
-
-      setIsLoading(true)
-
+    const fetchImmutableProducts = async () => {
+      if (!account) return
+      
+      setIsLoadingProducts(true)
+      const environmentId = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID || ''
+      // Use imported isTestnet
+      
       try {
-        // In a real implementation, these would be actual contract calls
-        // For this hackathon demo, we'll use mock data
-
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        // Mock data based on collection
-        if (collection.status === "active") {
-          setTicketBalance(3) // 3 tickets
-          setIsWhitelisted(false) // Not whitelisted yet
-        } else if (collection.status === "ended") {
-          setTicketBalance(5) // 5 tickets
-          setIsWhitelisted(true) // Whitelisted
+        const apiUrl = `https://api${isTestnet ? '.sandbox' : ''}.immutable.com/v1/primary-sales/${environmentId}/products`
+        console.log('Fetching products for eligible user from:', apiUrl)
+        
+        const productsRequest = await fetch(apiUrl)
+        
+        if (!productsRequest.ok) {
+          throw new Error(`Failed to fetch products: ${productsRequest.statusText}`)
+        }
+        
+        const productsData = await productsRequest.json()
+        console.log('Products data for eligible user:', productsData)
+        
+        if (Array.isArray(productsData) && productsData.length > 0) {
+          setImmutableProducts(productsData)
           
-          // If user is whitelisted and we're on Immutable network, pre-fetch products
-          if (showImmutable) {
-            fetchImmutableProducts()
+          // If we're viewing the quantum-fragments collection, update it with real data
+          if (collectionId === "quantum-fragments" && isTestnet) {
+            // Get the first product from the API to replace our placeholder
+            const product = productsData[0]
+            
+            // Calculate total supply from all products
+            const totalSupply = productsData.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0);
+            
+            // Update the collection with real data
+            setCollection({
+              ...initialCollection,
+              name: product.name || initialCollection.name,
+              description: product.description || initialCollection.description,
+              image: product.image || initialCollection.image,
+              // Use real price if available
+              price: product.pricing && product.pricing[0] 
+                ? `${product.pricing[0].amount} ${product.pricing[0].currency}` 
+                : initialCollection.price,
+              // Keep other fields but update where we have data
+              supply: totalSupply > 0 ? totalSupply.toString() : initialCollection.supply,
+              contractAddress: product.collection?.collection_address || initialCollection.contractAddress,
+              // Update artist if available in metadata
+              artist: product.artist || initialCollection.artist
+            })
           }
-        } else {
-          setTicketBalance(0) // No tickets yet
-          setIsWhitelisted(false) // Not whitelisted
         }
       } catch (error) {
-        console.error("Error loading ticket data:", error)
+        console.error('Error fetching products:', error)
+        toast({
+          title: "Failed to load NFT products",
+          description: "Please try again later",
+          variant: "destructive",
+        })
       } finally {
-        setIsLoading(false)
+        setIsLoadingProducts(false)
       }
     }
 
-    loadTicketData()
-  }, [account, provider, collection, showImmutable])
-
-  // Function to fetch Immutable products
-  const fetchImmutableProducts = async () => {
-    if (!account) return
-    
-    setIsLoadingProducts(true)
-    const environmentId = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID || ''
-    const isTestnet = process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT === 'sandbox'
-    
-    try {
-      const apiUrl = `https://api${isTestnet ? '.sandbox' : ''}.immutable.com/v1/primary-sales/${environmentId}/products`
-      console.log('Fetching products for eligible user from:', apiUrl)
-      
-      const productsRequest = await fetch(apiUrl)
-      
-      if (!productsRequest.ok) {
-        throw new Error(`Failed to fetch products: ${productsRequest.statusText}`)
-      }
-      
-      const productsData = await productsRequest.json()
-      console.log('Products data for eligible user:', productsData)
-      
-      if (Array.isArray(productsData) && productsData.length > 0) {
-        setImmutableProducts(productsData)
-        setEligibleToPurchase(true)
-        
-        // If we're viewing the quantum-fragments collection, update it with real data
-        if (collectionId === "quantum-fragments" && showImmutable) {
-          // Get the first product from the API to replace our placeholder
-          const product = productsData[0]
-          
-          // Calculate total supply from all products
-          const totalSupply = productsData.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0);
-          
-          // Update the collection with real data
-          setCollection({
-            ...initialCollection,
-            name: product.name || initialCollection.name,
-            description: product.description || initialCollection.description,
-            image: product.image || initialCollection.image,
-            // Use real price if available
-            price: product.pricing && product.pricing[0] 
-              ? `${product.pricing[0].amount} ${product.pricing[0].currency}` 
-              : initialCollection.price,
-            // Keep other fields but update where we have data
-            supply: totalSupply > 0 ? totalSupply.toString() : initialCollection.supply,
-            contractAddress: product.collection?.collection_address || initialCollection.contractAddress,
-            // Update artist if available in metadata
-            artist: product.artist || initialCollection.artist
-          })
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error)
-      toast({
-        title: "Failed to load NFT products",
-        description: "Please try again later",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingProducts(false)
-    }
-  }
-
-  // Purchase tickets
-  const purchaseTickets = async () => {
-    if (!account || !provider) {
-      toast({
-        title: "Wallet Not Connected",
-        description: "Please connect your wallet first",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      // In a real implementation, this would be an actual contract call
-      // For this hackathon demo, we'll simulate the transaction
-
-      // Calculate total cost
-      const totalCost = Number.parseFloat(collection.ticketPrice) * ticketAmount
-
-      // Simulate transaction (in a real app, this would be a real transaction)
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // Update ticket balance
-      setTicketBalance((prev) => (prev || 0) + ticketAmount)
-
-      toast({
-        title: "Tickets Purchased!",
-        description: `Successfully purchased ${ticketAmount} ticket${ticketAmount > 1 ? "s" : ""}`,
-        variant: "default",
-      })
-    } catch (error) {
-      console.error("Error purchasing tickets:", error)
-      toast({
-        title: "Purchase Failed",
-        description: "Failed to purchase tickets. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+    fetchImmutableProducts()
+  }, [account, initialCollection, collectionId, isTestnet, toast])
 
   // Format number with leading zero if needed
   const formatNumber = (num: number): string => {
@@ -530,20 +405,6 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
       <Button onClick={onBack} variant="outline" className="mb-6">
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Collections
       </Button>
-
-      {/* Display congratulations for eligible users */}
-      {isWhitelisted && showImmutable && (
-        <div className="mb-6 rounded-lg border border-green-600 bg-green-600/10 p-4">
-          <h3 className="text-xl font-semibold text-green-500">
-            🎉 Congratulations! You're eligible to purchase NFTs
-          </h3>
-          <p className="mt-2 text-gray-300">
-            You've been whitelisted in the raffle and can now purchase NFTs from the collection.
-            {collectionId === "quantum-fragments" && 
-              " The collection details above have been updated with the latest data from Immutable Hub."}
-          </p>
-        </div>
-      )}
 
       <div className="grid gap-6 md:grid-cols-[2fr_3fr]">
         {/* Collection Image and Info */}
@@ -678,16 +539,6 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
                                 </div>
                               </div>
 
-                              {ticketBalance !== null && ticketBalance > 0 && (
-                                <div className="mb-2 flex items-center justify-between">
-                                  <span className="text-sm">Your Tickets:</span>
-                                  <div className="flex items-center gap-1">
-                                    <Ticket className="h-4 w-4 text-purple-400" />
-                                    <span>{ticketBalance}</span>
-                                  </div>
-                                </div>
-                              )}
-
                               <div className="mt-3 flex items-center gap-2">
                                 <div className="flex flex-1 items-center rounded-md border border-gray-700 bg-gray-900">
                                   <Button
@@ -715,11 +566,26 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
                                   </Button>
                                 </div>
                                 <Button
-                                  onClick={purchaseTickets}
-                                  disabled={!account || isLoading}
-                                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                                  onClick={() => {
+                                    if (immutableProducts.length > 0) {
+                                      const product = immutableProducts[0];
+                                      handleSaleClick([
+                                        {
+                                          productId: product.product_id,
+                                          qty: ticketAmount,
+                                          name: product.name || "NFT Ticket",
+                                          image: product.image || "",
+                                          description: product.description || "",
+                                        }
+                                      ])
+                                    } else {
+                                      toast({ title: "Error", description: "Product details not loaded yet.", variant: "destructive" })
+                                    }
+                                  }}
+                                  disabled={isLoadingProducts || immutableProducts.length === 0 || !saleWidget || saleOpen}
+                                  className="bg-blue-500 hover:bg-blue-600"
                                 >
-                                  {isLoading ? "Processing..." : "Buy Tickets"}
+                                  {isLoadingProducts ? "Loading Product..." : `Buy with Immutable (${ticketAmount})`}
                                 </Button>
                               </div>
 
@@ -832,7 +698,7 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
                         {/* Step 3: Distribution (Active) */}
                         {step.id === 3 && step.status === "active" && (
                           <div className="mt-3 rounded-lg bg-gray-900 p-4">
-                            {isWhitelisted ? (
+                            {immutableProducts.length > 0 ? (
                               <div className="text-center">
                                 <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-green-500" />
                                 <p className="mb-2 font-medium">Congratulations! You're whitelisted!</p>
@@ -842,24 +708,14 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
                                 <Button 
                                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                                   onClick={() => {
-                                    if (immutableProducts.length > 0) {
-                                      const product = immutableProducts[0];
-                                      handleSaleClick([{
-                                        productId: product.product_id,
-                                        qty: 1,
-                                        name: product.name,
-                                        description: product.description,
-                                        image: product.image,
-                                      }]);
-                                    } else if (!isLoadingProducts) {
-                                      // If products aren't loaded yet, try to fetch them
-                                      fetchImmutableProducts();
-                                      toast({
-                                        title: "Loading NFTs",
-                                        description: "Please try again in a moment",
-                                        variant: "default",
-                                      });
-                                    }
+                                    const product = immutableProducts[0];
+                                    handleSaleClick([{
+                                      productId: product.product_id,
+                                      qty: 1,
+                                      name: product.name,
+                                      description: product.description,
+                                      image: product.image,
+                                    }]);
                                   }}
                                 >
                                   Mint NFT <ExternalLink className="ml-2 h-3 w-3" />
@@ -936,15 +792,10 @@ export function CollectionDetail({ collectionId, account, provider, onBack, show
         
         {/* Sale widget container */}
         {saleOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="relative">
-              <div id="sale-widget" />
-              <style jsx global>{`
-                /* Hide the Immutable close button if needed */
-                button[aria-label="Close"] {
-                  display: none !important;
-                }
-              `}</style>
+          <div id="sale-widget" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+            {/* The widget will be mounted here */}
+            <div className="rounded-lg bg-gray-800 p-4 shadow-xl">
+              <p className="text-center text-white">Loading Checkout...</p>
             </div>
           </div>
         )}

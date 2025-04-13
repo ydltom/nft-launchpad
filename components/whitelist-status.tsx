@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import type { ethers } from "ethers"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -22,7 +21,6 @@ const RAFFLE_END_DATE = new Date("2025-04-15T00:00:00Z").getTime()
 
 interface WhitelistStatusProps {
   account: string | null
-  provider: ethers.providers.Web3Provider | null
 }
 
 interface TimeLeft {
@@ -32,7 +30,7 @@ interface TimeLeft {
   seconds: number
 }
 
-export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
+export function WhitelistStatus({ account }: WhitelistStatusProps) {
   const [isWhitelisted, setIsWhitelisted] = useState<boolean | null>(null)
   const [ticketBalance, setTicketBalance] = useState<number | null>(null)
   const [raffleEnded, setRaffleEnded] = useState<boolean>(false)
@@ -74,7 +72,7 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
   // Check whitelist status when account changes
   useEffect(() => {
     const checkStatus = async () => {
-      if (!account || !provider) {
+      if (!account) {
         setIsWhitelisted(null)
         setTicketBalance(null)
         return
@@ -100,7 +98,7 @@ export function WhitelistStatus({ account, provider }: WhitelistStatusProps) {
     }
 
     checkStatus()
-  }, [account, provider])
+  }, [account])
 
   // Format address for display
   const formatAddress = (address: string) => {

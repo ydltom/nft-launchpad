@@ -1,158 +1,171 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { ethers } from "ethers"
+import { useState, useEffect, useMemo } from "react"
+// Remove ethers import
+// import { ethers } from "ethers"
 import { Navbar } from "@/components/navigationbar"
 import { CollectionGrid } from "@/components/collection-grid"
 import { CollectionDetail } from "@/components/collection-detail"
 import { FeaturedCarousel } from "@/components/featured-carousel"
 import { useToast } from "@/hooks/use-toast"
+// Import centralized Passport instance and config
+import { passportInstance, isTestnet } from '@/lib/immutable'
 
-// Add type declaration for window.ethereum
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
+// Remove type declaration for window.ethereum
+// declare global {
+//   interface Window {
+//     ethereum?: any;
+//   }
+// }
 
-// Immutable zkEVM testnet chainId
-const IMMUTABLE_ZKEVM_TESTNET_CHAIN_ID = 13473;
+// Remove Immutable zkEVM testnet chainId constant
+// const IMMUTABLE_ZKEVM_TESTNET_CHAIN_ID = 13473;
 
-// Log environment variables for debugging
+// Log environment variables for debugging (Keep these for now)
 console.log('Environment ID:', process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT_ID);
 console.log('Environment:', process.env.NEXT_PUBLIC_IMMUTABLE_ENVIRONMENT);
+console.log('Passport Client ID:', process.env.NEXT_PUBLIC_PASSPORT_CLIENT_ID);
+console.log('Base URL:', process.env.NEXT_PUBLIC_BASE_URL);
+
 
 export default function Home() {
   const [account, setAccount] = useState<string | null>(null)
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null)
+  // Remove provider state
+  // const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null)
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null)
-  const [showImmutable, setShowImmutable] = useState<boolean>(false)
+  // Remove showImmutable state
+  // const [showImmutable, setShowImmutable] = useState<boolean>(false)
   const { toast } = useToast()
 
-  // Check if wallet is connected on page load
+  // --- Start: Add Passport Initialization ---
+  // Remove the local initialization block
+  // --- End: Add Passport Initialization ---
+
+
+  // Remove checkConnection useEffect
+  // useEffect(() => { ... }, [])
+
+  // --- Start: Add Passport Login Callback Handler ---
   useEffect(() => {
-    const checkConnection = async () => {
-      if (window.ethereum) {
-        try {
-          const provider = new ethers.providers.Web3Provider(window.ethereum)
-          const accounts = await provider.listAccounts()
-
-          if (accounts.length > 0) {
-            setAccount(accounts[0])
-            setProvider(provider)
-            
-            // Check network
-            const network = await provider.getNetwork()
-            setShowImmutable(network.chainId === IMMUTABLE_ZKEVM_TESTNET_CHAIN_ID)
-          }
-        } catch (error) {
-          console.error("Failed to connect to wallet:", error)
-        }
-      }
-    }
-
-    checkConnection()
-  }, [])
-
-  // Connect wallet function
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        await provider.send("eth_requestAccounts", [])
-        const accounts = await provider.listAccounts()
-
-        setAccount(accounts[0])
-        setProvider(provider)
-
-        // Check if we're on Immutable zkEVM Testnet
-        const network = await provider.getNetwork()
-        if (network.chainId !== IMMUTABLE_ZKEVM_TESTNET_CHAIN_ID) {
-          toast({
-            title: "Wrong Network",
-            description: "Please switch to Immutable zkEVM Testnet",
-            variant: "destructive",
+    // Check if running in browser and passport instance exists
+    if (typeof window !== 'undefined' && passportInstance && window.location.pathname === '/redirect') {
+        console.log("Handling passport login callback on /redirect...");
+        passportInstance.loginCallback()
+          .then(() => {
+              // Optionally fetch user info or redirect
+              console.log("Passport login callback successful.");
+              // Redirect to home or clear params
+              window.history.replaceState({}, document.title, "/");
+              // Re-fetch user info after callback
+              fetchUserInfo();
           })
-
-          try {
-            await window.ethereum.request({
-              method: "wallet_switchEthereumChain",
-              params: [{ chainId: "0x3491" }], // Immutable zkEVM Testnet chainId in hex
-            })
-          } catch (switchError: any) {
-            // This error code indicates that the chain has not been added to MetaMask
-            if (switchError.code === 4902) {
-              try {
-                await window.ethereum.request({
-                  method: "wallet_addEthereumChain",
-                  params: [
-                    {
-                      chainId: "0x3491",
-                      chainName: "Immutable zkEVM Testnet",
-                      nativeCurrency: {
-                        name: "IMX",
-                        symbol: "IMX",
-                        decimals: 18,
-                      },
-                      rpcUrls: ["https://rpc.testnet.immutable.com"],
-                      blockExplorerUrls: ["https://explorer.testnet.immutable.com"],
-                    },
-                  ],
-                });
-              } catch (addError) {
-                console.error("Failed to add network:", addError);
-              }
-            } else {
-              console.error("Failed to switch network:", switchError);
-            }
-          }
-        } else {
-          setShowImmutable(true);
-        }
-      } catch (error) {
-        console.error("Failed to connect to wallet:", error)
-        toast({
-          title: "Connection Failed",
-          description: "Failed to connect to your wallet",
-          variant: "destructive",
-        })
-      }
-    } else {
-      toast({
-        title: "Wallet Not Found",
-        description: "Please install MetaMask or another Ethereum wallet",
-        variant: "destructive",
-      })
+          .catch((error: any) => {
+              console.error("Passport login callback failed:", error);
+              // Redirect to home or show error
+              window.history.replaceState({}, document.title, "/");
+          });
     }
-  }
+  }, [passportInstance]); // Add passportInstance as dependency
 
-  // Disconnect wallet function
-  const disconnectWallet = async () => {
+   // --- Start: Add Fetch User Info ---
+   const fetchUserInfo = async () => {
+    if (!passportInstance) return;
     try {
-      // Clear state
-      setAccount(null)
-      setProvider(null)
-      setShowImmutable(false)
-      
-      toast({
-        title: "Wallet Disconnected",
-        description: "Your wallet has been disconnected",
-        variant: "default",
-      })
+      const userProfile = await passportInstance.getUserInfo();
+      // Check if userProfile and sub exist
+      if (userProfile && userProfile.sub) {
+        // Get linked accounts
+        const accounts = await passportInstance.getLinkedAddresses();
+        if (accounts && accounts.length > 0) {
+          setAccount(accounts[0]); // Use the first linked address
+        } else {
+          setAccount(null); // No linked accounts found
+          console.log("No linked accounts found for this user.");
+        }
+      } else {
+        // No user logged in via Passport
+        setAccount(null);
+        console.log("No user profile found or user not logged in.");
+      }
     } catch (error) {
-      console.error("Failed to disconnect wallet:", error)
-      toast({
-        title: "Disconnect Failed",
-        description: "Failed to disconnect your wallet",
-        variant: "destructive",
-      })
+      console.error("Error fetching user info or linked accounts:", error);
+      setAccount(null); // Clear account on error
     }
-  }
+  };
+
+  // Fetch user info on initial load if passport is initialized
+  useEffect(() => {
+    if (passportInstance) {
+        fetchUserInfo();
+    }
+  }, [passportInstance]);
+  // --- End: Add Fetch User Info ---
+
+  // --- End: Add Passport Login Callback Handler ---
+
+
+  // Remove connectWallet function
+  // const connectWallet = async () => { ... }
+
+  // --- Start: Add loginWithPassport Function ---
+  const loginWithPassport = async () => {
+    if (!passportInstance) {
+        toast({ title: "Passport Error", description: "Passport not initialized.", variant: "destructive" });
+        console.error("Passport instance is null. Cannot login.");
+        return;
+    }
+    try {
+        // Revert back to connectEvm() as login() caused issues
+        const provider = await passportInstance.connectEvm();
+
+        if (!provider) {
+            throw new Error("Failed to get Passport provider.");
+        }
+
+        // Request accounts from the provider
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+
+        if (accounts && accounts.length > 0) {
+            setAccount(accounts[0]);
+            toast({ title: "Connected", description: `Wallet connected: ${accounts[0].substring(0, 6)}...`, variant: "default" });
+        } else {
+            throw new Error("No accounts returned from Passport provider.");
+        }
+    } catch (error: any) { 
+        console.error("Passport connectEvm failed:", error); // Reverted error message
+        toast({ title: "Connection Failed", description: `Wallet connection failed: ${error?.message || error}`, variant: "destructive" });
+        setAccount(null); // Ensure account is null on failure
+    }
+  };
+  // --- End: Add loginWithPassport Function ---
+
+
+  // Remove disconnectWallet function
+  // const disconnectWallet = async () => { ... }
+
+  // --- Start: Add logout Function ---
+   const logout = async () => {
+    if (!passportInstance) {
+        toast({ title: "Passport Error", description: "Passport not initialized.", variant: "destructive" });
+        return;
+    }
+    try {
+        await passportInstance.logout();
+        // State update will happen after redirect or can be done optimistically
+        setAccount(null);
+        toast({ title: "Logged Out", description: "You have been logged out.", variant: "default" });
+    } catch (error: any) {
+        console.error("Passport logout failed:", error);
+        toast({ title: "Logout Failed", description: `Passport logout failed: ${error.message || error}`, variant: "destructive" });
+    }
+  };
+  // --- End: Add logout Function ---
+
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white">
-      {/* Navbar */}
-      <Navbar account={account} onConnect={connectWallet} onDisconnect={disconnectWallet} />
+      {/* Navbar - Update props */}
+      <Navbar account={account} onConnect={loginWithPassport} onDisconnect={logout} />
       
       {/* Hero Section */}
       <section className="relative h-[400px] w-full overflow-hidden pt-16">
@@ -179,9 +192,11 @@ export default function Home() {
           <CollectionDetail
             collectionId={selectedCollection}
             account={account}
-            provider={provider}
+            // Remove provider prop
+            // provider={provider}
             onBack={() => setSelectedCollection(null)}
-            showImmutable={showImmutable}
+            // Remove showImmutable prop
+            // showImmutable={showImmutable}
           />
         ) : (
           <CollectionGrid account={account} onSelectCollection={setSelectedCollection} />
