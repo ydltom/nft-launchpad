@@ -46,26 +46,8 @@ export default function Home() {
   // useEffect(() => { ... }, [])
 
   // --- Start: Add Passport Login Callback Handler ---
-  useEffect(() => {
-    // Check if running in browser and passport instance exists
-    if (typeof window !== 'undefined' && passportInstance && window.location.pathname === '/redirect') {
-        console.log("Handling passport login callback on /redirect...");
-        passportInstance.loginCallback()
-          .then(() => {
-              // Optionally fetch user info or redirect
-              console.log("Passport login callback successful.");
-              // Redirect to home or clear params
-              window.history.replaceState({}, document.title, "/");
-              // Re-fetch user info after callback
-              fetchUserInfo();
-          })
-          .catch((error: any) => {
-              console.error("Passport login callback failed:", error);
-              // Redirect to home or show error
-              window.history.replaceState({}, document.title, "/");
-          });
-    }
-  }, [passportInstance]); // Add passportInstance as dependency
+  // Remove the useEffect hook that handled loginCallback
+  // useEffect(() => { ... }, [passportInstance]); 
 
    // --- Start: Add Fetch User Info ---
    const fetchUserInfo = async () => {
@@ -115,18 +97,10 @@ export default function Home() {
         return;
     }
     try {
-        // Revert back to connectEvm() as login() caused issues
         const provider = await passportInstance.connectEvm();
-
-        if (!provider) {
-            throw new Error("Failed to get Passport provider.");
-        }
-
-        // Request accounts from the provider
         const accounts = await provider.request({ method: 'eth_requestAccounts' });
-
-        if (accounts && accounts.length > 0) {
-            setAccount(accounts[0]);
+        if (accounts && accounts.length > 0) {  
+          setAccount(accounts[0]);
             toast({ title: "Connected", description: `Wallet connected: ${accounts[0].substring(0, 6)}...`, variant: "default" });
         } else {
             throw new Error("No accounts returned from Passport provider.");
@@ -137,11 +111,6 @@ export default function Home() {
         setAccount(null); // Ensure account is null on failure
     }
   };
-  // --- End: Add loginWithPassport Function ---
-
-
-  // Remove disconnectWallet function
-  // const disconnectWallet = async () => { ... }
 
   // --- Start: Add logout Function ---
    const logout = async () => {

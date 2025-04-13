@@ -21,9 +21,9 @@ export const baseConfig = new config.ImmutableConfiguration({
 const passportConfigData = (passportClientId && baseURL && environmentId) ? {
     baseConfig,
     clientId: passportClientId,
-    // Ensure consistent redirect URIs
-    redirectUri: `${baseURL}/redirect`,
-    logoutRedirectUri: `${baseURL}/logout`,
+    redirectUri: `http://localhost:3000/redirect`,
+    logoutMode: 'silent',
+    logoutRedirectUri: 'http://localhost:3000/silent-logout',
     audience: 'platform_api',
     scope: 'openid offline_access email transact',
 } : null;

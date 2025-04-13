@@ -71,7 +71,7 @@ export function CollectionDetail({ collectionId, account, onBack }: CollectionDe
   const checkoutInstance = useMemo(() => {
     return new checkout.Checkout({
       baseConfig,
-      passport: passportInstance,
+      passport: passportInstance === null ? undefined : passportInstance,
     })
   }, [baseConfig, passportInstance])
   
